@@ -9,7 +9,7 @@ module I18n
     #
     #   create_table :translations do |t|
     #     t.string :locale
-    #     t.string :trans_key
+    #     t.string :trans_trans_key
     #     t.text   :value
     #     t.text   :interpolations
     #     t.boolean :is_proc, :default => false
@@ -22,8 +22,8 @@ module I18n
     #   # => all translation records that belong to the :en locale
     #
     # The :lookup scope adds a condition for looking up all translations
-    # that either start with the given keys (joined by an optionally given
-    # separator or I18n.default_separator) or that exactly have this key.
+    # that either start with the given trans_keys (joined by an optionally given
+    # separator or I18n.default_separator) or that exactly have this trans_key.
     #
     #   # with translations present for :"foo.bar" and :"foo.baz"
     #   I18n::Backend::ActiveRecord::Translation.lookup(:foo)
@@ -40,9 +40,9 @@ module I18n
     #   Translation = I18n::Backend::ActiveRecord::Translation
     #   Translation.create \
     #     :locale => 'en'
-    #     :key    => 'foo'
-    #     :value  => lambda { |key, options| 'FOO' }
-    #   Translation.find_by_locale_and_key('en', 'foo').value
+    #     :trans_key    => 'foo'
+    #     :value  => lambda { |trans_key, options| 'FOO' }
+    #   Translation.find_by_locale_and_trans_key('en', 'foo').value
     #   # => 'FOO'
     class ActiveRecord
       class Translation < ::ActiveRecord::Base
@@ -58,20 +58,20 @@ module I18n
           def locale(locale)
             where(:locale => locale.to_s)
           end
-          
-          alias_attribute :key, :trans_key
 
-          def lookup(keys, *separator)
-            column_name = connection.quote_column_name('key')
-            keys = Array(keys).map! { |key| key.to_s }
+          alias_attribute :trans_key, :trans_trans_key
+
+          def lookup(trans_keys, *separator)
+            column_name = connection.quote_column_name('trans_key')
+            trans_keys = Array(trans_keys).map! { |trans_key| trans_key.to_s }
 
             unless separator.empty?
               warn "[DEPRECATION] Giving a separator to Translation.lookup is deprecated. " <<
                 "You can change the internal separator by overwriting FLATTEN_SEPARATOR."
             end
 
-            namespace = "#{keys.last}#{I18n::Backend::Flatten::FLATTEN_SEPARATOR}%"
-            where("#{column_name} IN (?) OR #{column_name} LIKE ?", keys, namespace)
+            namespace = "#{trans_keys.last}#{I18n::Backend::Flatten::FLATTEN_SEPARATOR}%"
+            where("#{column_name} IN (?) OR #{column_name} LIKE ?", trans_keys, namespace)
           end
 
           def available_locales
@@ -79,8 +79,8 @@ module I18n
           end
         end
 
-        def interpolates?(key)
-          self.interpolations.include?(key) if self.interpolations
+        def interpolates?(trans_key)
+          self.interpolations.include?(trans_key) if self.interpolations
         end
 
         def value

@@ -65,12 +65,12 @@ module I18n
         ActiveRecord::Schema.define(:version => 1) do
           create_table :translations, :force => true do |t|
             t.string :locale
-            t.string :key
+            t.string :trans_key
             t.text :value
             t.text :interpolations
             t.boolean :is_proc, :default => false
           end
-          add_index :translations, [:locale, :key], :unique => true
+          add_index :translations, [:locale, :trans_key], :unique => true
         end
       end
 

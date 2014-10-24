@@ -21,36 +21,36 @@ module I18n
 
         def store_translations(locale, data, options = {})
           escape = options.fetch(:escape, true)
-          flatten_translations(locale, data, escape, false).each do |key, value|
-            Translation.locale(locale).lookup(expand_keys(key)).delete_all
-            Translation.create(:locale => locale.to_s, :key => key.to_s, :value => value)
+          flatten_translations(locale, data, escape, false).each do |trans_key, value|
+            Translation.locale(locale).lookup(expand_trans_keys(trans_key)).delete_all
+            Translation.create(:locale => locale.to_s, :trans_key => trans_key.to_s, :value => value)
           end
         end
 
       protected
 
-        def lookup(locale, key, scope = [], options = {})
-          key = normalize_flat_keys(locale, key, scope, options[:separator])
-          result = Translation.locale(locale).lookup(key)
+        def lookup(locale, trans_key, scope = [], options = {})
+          trans_key = normalize_flat_trans_keys(locale, trans_key, scope, options[:separator])
+          result = Translation.locale(locale).lookup(trans_key)
 
           if result.empty?
             nil
-          elsif result.first.key == key
+          elsif result.first.trans_key == trans_key
             result.first.value
           else
-            chop_range = (key.size + FLATTEN_SEPARATOR.size)..-1
+            chop_range = (trans_key.size + FLATTEN_SEPARATOR.size)..-1
             result = result.inject({}) do |hash, r|
-              hash[r.key.slice(chop_range)] = r.value
+              hash[r.trans_key.slice(chop_range)] = r.value
               hash
             end
-            result.deep_symbolize_keys
+            result.deep_symbolize_trans_keys
           end
         end
 
-        # For a key :'foo.bar.baz' return ['foo', 'foo.bar', 'foo.bar.baz']
-        def expand_keys(key)
-          key.to_s.split(FLATTEN_SEPARATOR).inject([]) do |keys, key|
-            keys << [keys.last, key].compact.join(FLATTEN_SEPARATOR)
+        # For a trans_key :'foo.bar.baz' return ['foo', 'foo.bar', 'foo.bar.baz']
+        def expand_trans_keys(trans_key)
+          trans_key.to_s.split(FLATTEN_SEPARATOR).inject([]) do |trans_keys, trans_key|
+            trans_keys << [trans_keys.last, trans_key].compact.join(FLATTEN_SEPARATOR)
           end
         end
       end

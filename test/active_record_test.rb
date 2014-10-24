@@ -11,7 +11,7 @@ class I18nBackendActiveRecordTest < Test::Unit::TestCase
     super
   end
 
-  test "store_translations does not allow ambiguous keys (1)" do
+  test "store_translations does not allow ambiguous trans_keys (1)" do
     I18n::Backend::ActiveRecord::Translation.delete_all
     I18n.backend.store_translations(:en, :foo => 'foo')
     I18n.backend.store_translations(:en, :foo => { :bar => 'bar' })
@@ -23,7 +23,7 @@ class I18nBackendActiveRecordTest < Test::Unit::TestCase
     assert_equal({ :bar => 'bar', :baz => 'baz' }, I18n.t(:foo))
   end
 
-  test "store_translations does not allow ambiguous keys (2)" do
+  test "store_translations does not allow ambiguous trans_keys (2)" do
     I18n::Backend::ActiveRecord::Translation.delete_all
     I18n.backend.store_translations(:en, :foo => { :bar => 'bar' })
     I18n.backend.store_translations(:en, :foo => { :baz => 'baz' })
@@ -35,7 +35,7 @@ class I18nBackendActiveRecordTest < Test::Unit::TestCase
     assert_equal 'foo', I18n.t(:foo)
   end
 
-  test "can store translations with keys that are translations containing special chars" do
+  test "can store translations with trans_keys that are translations containing special chars" do
     I18n.backend.store_translations(:es, :"Pagina's" => "Pagina's" )
     assert_equal "Pagina's", I18n.t(:"Pagina's", :locale => :es)
   end
@@ -47,8 +47,8 @@ class I18nBackendActiveRecordTest < Test::Unit::TestCase
     end
   end
 
-  def test_expand_keys
-    assert_equal %w(foo foo.bar foo.bar.baz), I18n.backend.send(:expand_keys, :'foo.bar.baz')
+  def test_expand_trans_keys
+    assert_equal %w(foo foo.bar foo.bar.baz), I18n.backend.send(:expand_trans_keys, :'foo.bar.baz')
   end
 end if defined?(ActiveRecord)
 
