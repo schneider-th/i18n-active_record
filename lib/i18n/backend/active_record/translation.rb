@@ -9,7 +9,7 @@ module I18n
     #
     #   create_table :translations do |t|
     #     t.string :locale
-    #     t.string :key
+    #     t.string :trans_key
     #     t.text   :value
     #     t.text   :interpolations
     #     t.boolean :is_proc, :default => false
@@ -58,6 +58,8 @@ module I18n
           def locale(locale)
             where(:locale => locale.to_s)
           end
+          
+          alias_attribute :key, :trans_key
 
           def lookup(keys, *separator)
             column_name = connection.quote_column_name('key')
