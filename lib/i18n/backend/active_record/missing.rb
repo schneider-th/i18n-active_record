@@ -38,7 +38,7 @@ module I18n
         def store_default_translations(locale, trans_key, options = {})
           count, scope, default, separator = options.values_at(:count, :scope, :default, :separator)
           separator ||= I18n.default_separator
-          trans_key = normalize_flat_trans_keys(locale, trans_key, scope, separator)
+          trans_key = normalize_flat_keys(locale, trans_key, scope, separator)
 
           unless ActiveRecord::Translation.locale(locale).lookup(trans_key).exists?
             interpolations = options.trans_keys - I18n::RESERVED_KEYS

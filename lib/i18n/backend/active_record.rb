@@ -30,7 +30,7 @@ module I18n
       protected
 
         def lookup(locale, trans_key, scope = [], options = {})
-          trans_key = normalize_flat_trans_keys(locale, trans_key, scope, options[:separator])
+          trans_key = normalize_flat_keys(locale, trans_key, scope, options[:separator])
           result = Translation.locale(locale).lookup(trans_key)
 
           if result.empty?
