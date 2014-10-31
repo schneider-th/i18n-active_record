@@ -43,7 +43,7 @@ module I18n
               hash[r.trans_key.slice(chop_range)] = r.value
               hash
             end
-            result.deep_symbolize_trans_keys
+            result.deep_symbolize_keys
           end
         end
 
